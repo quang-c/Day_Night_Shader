@@ -37,6 +37,10 @@ Shader "Unlit/SkyShader" {
 
 			#pragma multi_compile _SUNDISK_NONE _SUNDISK_SIMPLE _SUNDISK_HIGH_QUALITY
 
+			// uniform: a variable whose data is constant throughout the execution of a shader (such as a material color in a vertex shader)
+			//global variables are considered uniform by default.
+			// half = medium precision floating point
+			// half3 = medium precision 3D vector with x,y,z components (for color its r,g,b)
 			uniform half _Exposure;     // HDR exposure
 			uniform half3 _GroundColor;
 			uniform half _SunSize;
