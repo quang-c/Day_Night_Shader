@@ -71,8 +71,9 @@
 				half p = i.texcoord.y;
 
 				half sunDist;
+				half moonDist;
 				half3 sunMie = calculateSpot(_WorldSpaceLightPos0.xyz, i.texcoord.xyz, _SunSize, sunDist);
-				half3 moonMie = calculateSpot(_MoonPosition.xyz, i.texcoord.xyz, _MoonSize, sunDist);
+				half3 moonMie = calculateSpot(_MoonPosition.xyz, i.texcoord.xyz, _MoonSize, moonDist);
 
 				float p1 = pow(min(1.0, 1.0 - p), _HorizonFogExponent);
 				float p2 = 1.0 - p1;
