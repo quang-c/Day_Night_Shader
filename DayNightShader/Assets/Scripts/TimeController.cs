@@ -36,7 +36,7 @@ public class TimeController : MonoBehaviour
 
     [Header("Fog")]
     [SerializeField] private Gradient fogColor;
-    [SerializeField] private AnimationCurve fogStartDistance;
+    //[SerializeField] private AnimationCurve fogStartDistance;
 
 
     private void Start()
@@ -56,7 +56,7 @@ public class TimeController : MonoBehaviour
         //    currentTimeOfDay = 0f;
         //}
 
-
+        // begin timer , multiplied by a multiplier
         time += degreesPerSec * Time.deltaTime;
 
         if (time >= 360f)
@@ -64,14 +64,20 @@ public class TimeController : MonoBehaviour
             time -= 360f;
         }
 
+        // rotate the sun
         sun.transform.eulerAngles = new Vector3(time, -90f, 0f);
-        moon.transform.eulerAngles = new Vector3(time + 180f, -90f, 0f);
+        // rotate the moon
+        moon.transform.eulerAngles = new Vector3(time + 180f, 90f, 0f);
 
+        // value that keeps track of the day/night cycle
         float cycleStage = time / 360f;
 
+        // set values for basic lighting settings
         RenderSettings.ambientLight = ambientColor.Evaluate(cycleStage);
         RenderSettings.fogColor = fogColor.Evaluate(cycleStage);
-        RenderSettings.fogStartDistance = fogStartDistance.Evaluate(cycleStage);
+        //RenderSettings.fogStartDistance = fogStartDistance.Evaluate(cycleStage);
+
+        // set values in the skybox shader
         RenderSettings.skybox.SetFloat("_SunGlareStrength", sunGlareStrength.Evaluate(cycleStage));
         RenderSettings.skybox.SetFloat("_SunSize", sunSize.Evaluate(cycleStage));
 
