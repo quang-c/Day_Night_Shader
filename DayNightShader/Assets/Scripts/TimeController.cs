@@ -29,7 +29,7 @@ public class TimeController : MonoBehaviour
     private void Update()
     {
 
-        // begin timer , multiplied by a multiplier
+        // begin timer , multiplied by a degreesPerSec
         time += degreesPerSec * Time.deltaTime;
 
         if (time >= 360f)
