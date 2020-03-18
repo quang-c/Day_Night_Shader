@@ -69,19 +69,19 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HorizonFogExponent: 1.0117477
+    - _HorizonFogExponent: 1.0331262
     - _Metallic: 0
     - _Mode: 0
-    - _MoonSize: 0.060536914
+    - _MoonSize: 0.08050121
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SunDisk: 1
-    - _SunGlareStrength: 0.464
+    - _SunGlareStrength: 0.19980088
     - _SunHardness: 15
-    - _SunSize: 0.100064255
+    - _SunSize: 0.07020454
     - _SunSizeConvergence: 5.59
     - _UVSec: 0
     - _ZWrite: 1
@@ -92,5 +92,5 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.8018868, g: 0.8018868, b: 0.8018868, a: 1}
     - _MoonColor: {r: 0.7737629, g: 0.8660612, b: 0.8679245, a: 1}
-    - _MoonPosition: {r: 0.4088767, g: 0.9125897, b: 0.00000008940697, a: 0}
-    - _SkyTint: {r: 0.10109687, g: 0.10109687, b: 0.17818303, a: 1}
+    - _MoonPosition: {r: 0.07629645, g: -0.9970852, b: -0, a: 0}
+    - _SkyTint: {r: 0.45778468, g: 0.68772596, b: 0.90287584, a: 1}

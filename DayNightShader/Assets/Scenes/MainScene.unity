@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.42609617, g: 0.4262662, b: 0.4369839, a: 1}
+  m_IndirectSpecularColor: {r: 0.49000752, g: 0.5476819, b: 0.61092407, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -150,7 +150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dfb10483ef52db4587c8902c8ce331e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  degreesPerSec: 7
+  degreesPerSec: 10
   time: 0
   ambientColor:
     serializedVersion: 2
@@ -355,8 +355,8 @@ MonoBehaviour:
       inWeight: 0
       outWeight: 0.14723577
     - serializedVersion: 3
-      time: 0.23545381
-      value: 0.097651824
+      time: 0.30015108
+      value: 0.19919907
       inSlope: -0.036801085
       outSlope: -0.036801085
       tangentMode: 0
@@ -364,8 +364,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.35437524
     - serializedVersion: 3
-      time: 0.5100503
-      value: 0.093438834
+      time: 0.65546656
+      value: 0.17669079
       inSlope: -0.09015994
       outSlope: -0.09015994
       tangentMode: 0
@@ -441,18 +441,18 @@ MonoBehaviour:
     key0: {r: 0.7921569, g: 0.5921569, b: 0.46666667, a: 1}
     key1: {r: 0.43734425, g: 0.72051424, b: 0.7924528, a: 1}
     key2: {r: 0.4392157, g: 0.72156864, b: 0.79607844, a: 1}
-    key3: {r: 0.8962264, g: 0.66458523, b: 0.5538003, a: 0}
-    key4: {r: 0.7924528, g: 0.5919842, b: 0.4672481, a: 0}
-    key5: {r: 0.13329923, g: 0.12936099, b: 0.1792453, a: 0}
-    key6: {r: 0.13333334, g: 0.12941177, b: 0.18039216, a: 0}
+    key3: {r: 0.8301887, g: 0.5177999, b: 0.37201852, a: 0}
+    key4: {r: 0.13329923, g: 0.12936099, b: 0.1792453, a: 0}
+    key5: {r: 0.13333334, g: 0.12941177, b: 0.18039216, a: 0}
+    key6: {r: 0.7921569, g: 0.5921569, b: 0.46666667, a: 0}
     key7: {r: 0.7921569, g: 0.5921569, b: 0.46666667, a: 0}
     ctime0: 2646
     ctime1: 5682
     ctime2: 26463
-    ctime3: 31989
-    ctime4: 33857
-    ctime5: 38138
-    ctime6: 61566
+    ctime3: 33312
+    ctime4: 38138
+    ctime5: 61566
+    ctime6: 65535
     ctime7: 65535
     atime0: 0
     atime1: 65535
@@ -463,7 +463,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 8
+    m_NumColorKeys: 7
     m_NumAlphaKeys: 2
 --- !u!4 &469558371
 Transform:
