@@ -2,6 +2,7 @@
 {
     Properties
     {
+		_Seed("Seed", float) = 68.89
 		_SkyTint("Sky Tint", Color) = (.5, .5, .5, 1)
 		_HorizonFogExponent("Horizon Fog", Range(0, 15)) = 1
 
@@ -14,6 +15,20 @@
 		_MoonColor("	Color", Color) = (1, 1, 1, 1)
 		_MoonPosition("	Position", Vector) = (0, 0, 1)
 		_MoonSize("	Size", Range(0, 1)) = 0.03
+
+		[Header(Single star settings)]
+		_Color("	Stars color", Color) = (1.0, 1.0, 1.0, 1.0)
+		[MinMax(0.4, 3.0)] _StarSizeRange("	Star size range", Vector) = (0.6, 0.9, 0.0, 0.0)
+
+		[Header(Stars)]
+		[Toggle(ENABLE_STARS)] _EnableStars("Enable Stars", Int) = 1
+		_Layers("	Star Layers", Range(1.0, 5.0)) = 5
+		_Density("	Star Density", Range(0.5, 4.0)) = 2.28
+		_DensityMod("	Star Density modulation", Range(1.1, 3.0)) = 1.95
+
+		[Header(Brightness settings)]
+		_Brightness("Contrast", Range(0.0, 3.0)) = 2.89
+		_BrightnessMod("Brightness modulation", Range(1.01, 4.0)) = 3.0
     }
     SubShader
     {
@@ -31,8 +46,12 @@
 
             #include "UnityCG.cginc"
 			#include "Lighting.cginc"
+			#include "Utils.cginc"
 
 			#define HARDNESS_EXPONENT_BASE 0.125
+			#define PI 3.141592653589793238462
+
+			#pragma shader_feature _ ENABLE_STARS
 
 			// data
             struct appdata
@@ -55,7 +74,16 @@
 			uniform float3 _MoonPosition;
 			uniform half3 _SkyTint, _MoonColor;
 			uniform half _SunSize, _HorizonFogExponent, _SunHardness, _SunGlareStrength, _MoonSize;
-			
+
+			float _Seed;
+			float4 _Color;
+			float2 _StarSizeRange;
+			float _Density;
+			float _Layers;
+			float _DensityMod;
+			float _BrightnessMod;
+			float _Brightness;
+
 			// calc sun or moon shape
 			half calculate(half3 sunDirPos, half3 ray, half size, out half distance)
 			{
@@ -70,13 +98,52 @@
             {
                 v2f OUT;
                 OUT.position = UnityObjectToClipPos(v.vertex);
-				OUT.texcoord = v.texcoord;
+				OUT.texcoord = v.texcoord.xyz;
+				//OUT.texcoord = v.texcoord;
                 return OUT;
             }
+
+			float stars(float3 rayDir, float sphereRadius, float sizeMod)
+			{
+				float3 spherePoint = rayDir * sphereRadius;
+
+				float upAtan = atan2(spherePoint.y, length(spherePoint.xz)) + 4.0 * PI;
+
+				float starSpaces = 1.0 / sphereRadius;
+				float starSize = (sphereRadius * 0.0015) * fwidth(upAtan) * 1000.0 * sizeMod;
+				upAtan -= fmod(upAtan, starSpaces) - starSpaces * 0.5;
+
+				float numberOfStars = floor(sqrt(pow(sphereRadius, 2.0) * (1.0 - pow(sin(upAtan), 2.0))) * 3.0);
+
+				float planeAngle = atan2(spherePoint.z, spherePoint.x) + 4.0 * PI;
+				planeAngle = planeAngle - fmod(planeAngle, PI / numberOfStars);
+
+				float2 randomPosition = hash22(float2(planeAngle, upAtan) + _Seed);
+
+				float starLevel = sin(upAtan + starSpaces * (randomPosition.y - 0.5) * (1.0 - starSize)) * sphereRadius;
+				float starDistanceToYAxis = sqrt(sphereRadius * sphereRadius - starLevel * starLevel);
+				float starAngle = planeAngle + (PI * (randomPosition.x * (1.0 - starSize) + starSize * 0.5) / numberOfStars);
+				float3 starCenter = float3(cos(starAngle) * starDistanceToYAxis, starLevel, sin(starAngle) * starDistanceToYAxis);
+
+				float star = smoothstep(starSize, 0.0, distance(starCenter, spherePoint));
+
+				return star;
+			}
+
+			float starModFromI(float i)
+			{
+				return lerp(_StarSizeRange.y, _StarSizeRange.x, smoothstep(1.0, _Layers, i));
+			}
+
 
 			// sample texture - fragmentshaderinput
 			half4 frag(v2f IN) : SV_Target
 			{
+
+
+				half3 col = half3(0.0, 0.0, 0.0);
+
+
 				// uv y
 				half p = IN.texcoord.y;
 
@@ -95,11 +162,26 @@
 				
 				half glareMultiplier = saturate((sunDist - _SunGlareStrength) / (1 - _SunGlareStrength));
 
-				half3 col = 0;
+
+
 				col += sunMie * p2 * _LightColor0.rgb; // Sun
 				col += lerp(_SkyTint, unity_FogColor, glareMultiplier * glareMultiplier) * p2 * (1 - sunMie); // Sun glare
 				col += moonMie * p2 * _MoonColor.rgb; // Moon
 				col += unity_FogColor * p1; // Horizon fog
+
+				#if defined(ENABLE_STARS)
+				float3 rayDir = normalize(IN.texcoord - _WorldSpaceCameraPos);
+				float star = 0.0;
+				for (float i = 1.0; i <= _Layers; i += 1.0)
+				{
+					star += stars(rayDir, _Density * pow(_DensityMod, i), starModFromI(i)) * (1.0 / pow(_BrightnessMod, i));
+				}
+
+
+				col += _Color * star * _Brightness;
+
+				#endif
+
                 return half4(col, 1);
             }
             ENDCG
