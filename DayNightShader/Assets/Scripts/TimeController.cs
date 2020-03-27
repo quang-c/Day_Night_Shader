@@ -32,6 +32,7 @@ public class TimeController : MonoBehaviour
         // begin timer , multiplied by a degreesPerSec
         time += degreesPerSec * Time.deltaTime;
 
+        // reset timer back to the "beginning of the day"
         if (time >= 360f)
         {
             time -= 360f;
@@ -40,7 +41,7 @@ public class TimeController : MonoBehaviour
         // rotate the sun
         sun.transform.eulerAngles = new Vector3(time, -90f, 0f);
         // rotate the moon
-        moon.transform.eulerAngles = new Vector3(time + 180f, 90f, 0f);
+        moon.transform.eulerAngles = new Vector3(time + 180f, -90f, 0f);
 
         // value that keeps track of the day/night cycle
         float cycleStage = time / 360f;
@@ -54,7 +55,7 @@ public class TimeController : MonoBehaviour
         RenderSettings.skybox.SetFloat("_SunGlareStrength", sunGlareStrength.Evaluate(cycleStage));
         RenderSettings.skybox.SetFloat("_SunSize", sunSize.Evaluate(cycleStage));
 
-        RenderSettings.skybox.SetVector("_MoonPosition", new Vector4(moon.transform.forward.x, -moon.transform.forward.y, -moon.transform.forward.z, 0));
+        RenderSettings.skybox.SetVector("_MoonPosition", new Vector4(-moon.transform.forward.x, -moon.transform.forward.y, -moon.transform.forward.z, 0));
         RenderSettings.skybox.SetFloat("_MoonSize", moonSize.Evaluate(cycleStage));
 
         RenderSettings.skybox.SetFloat("_HorizonFogExponent", horizonFog.Evaluate(cycleStage));

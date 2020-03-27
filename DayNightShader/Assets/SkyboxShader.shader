@@ -27,8 +27,8 @@
 		_DensityMod("	Star Density modulation", Range(1.1, 3.0)) = 1.95
 
 		[Header(Brightness settings)]
-		_Brightness("Contrast", Range(0.0, 3.0)) = 2.89
-		_BrightnessMod("Brightness modulation", Range(1.01, 4.0)) = 3.0
+		_Brightness("	Brightness", Range(0.0, 3.0)) = 2.89
+		_BrightnessMod("	Brightness modulation", Range(1.01, 4.0)) = 3.0
     }
     SubShader
     {
@@ -60,11 +60,11 @@
 				float3 texcoord :TEXCOORD0;
             };
 
-			// vertex to fragment struct
+			// vertex output
 			struct v2f
 			{
-				float4 position : SV_POSITION;
-				float3 texcoord : TEXCOORD0;
+				float4 position : SV_POSITION;  // clip space
+				float3 texcoord : TEXCOORD0; // UV data
 			};
 
 			// uniform: a variable whose data is constant throughout the execution of a shader
@@ -93,32 +93,38 @@
 				return 1.0 - pow(HARDNESS_EXPONENT_BASE, spot * _SunHardness);
 			}
 
-			// vertex to fragment - vertexshaderoutput
+			// vertex to fragment - vertex output
             v2f vert (appdata v)
             {
                 v2f OUT;
                 OUT.position = UnityObjectToClipPos(v.vertex);
-				OUT.texcoord = v.texcoord.xyz;
-				//OUT.texcoord = v.texcoord;
+				OUT.texcoord = v.texcoord;
                 return OUT;
             }
 
-			float stars(float3 rayDir, float sphereRadius, float sizeMod)
+			// creating the stars
+			float stars(float3 rayDir, float sphereRadius, float starSizeMod)
 			{
+				// create white dots
 				float3 spherePoint = rayDir * sphereRadius;
-
+				// create sphere
 				float upAtan = atan2(spherePoint.y, length(spherePoint.xz)) + 4.0 * PI;
 
+				// spread
 				float starSpaces = 1.0 / sphereRadius;
-				float starSize = (sphereRadius * 0.0015) * fwidth(upAtan) * 1000.0 * sizeMod;
+				
+				// star size
+				float starSize = (sphereRadius * 0.0015) * fwidth(upAtan) * 1000.0 * starSizeMod;
+				// shift the star spaces
 				upAtan -= fmod(upAtan, starSpaces) - starSpaces * 0.5;
 
+				// number of stars
 				float numberOfStars = floor(sqrt(pow(sphereRadius, 2.0) * (1.0 - pow(sin(upAtan), 2.0))) * 3.0);
 
 				float planeAngle = atan2(spherePoint.z, spherePoint.x) + 4.0 * PI;
 				planeAngle = planeAngle - fmod(planeAngle, PI / numberOfStars);
 
-				float2 randomPosition = hash22(float2(planeAngle, upAtan) + _Seed);
+				float2 randomPosition = random(float2(planeAngle, upAtan) + _Seed);
 
 				float starLevel = sin(upAtan + starSpaces * (randomPosition.y - 0.5) * (1.0 - starSize)) * sphereRadius;
 				float starDistanceToYAxis = sqrt(sphereRadius * sphereRadius - starLevel * starLevel);
@@ -130,6 +136,8 @@
 				return star;
 			}
 
+			// lerp size of star based on layer
+			// further away means smaller star
 			float starModFromI(float i)
 			{
 				return lerp(_StarSizeRange.y, _StarSizeRange.x, smoothstep(1.0, _Layers, i));
@@ -140,9 +148,7 @@
 			half4 frag(v2f IN) : SV_Target
 			{
 
-
 				half3 col = half3(0.0, 0.0, 0.0);
-
 
 				// uv y
 				half p = IN.texcoord.y;
@@ -158,10 +164,8 @@
 				float p2 = 1.0 - p1;
 
 				sunDist =  1- sunDist;
-
 				
 				half glareMultiplier = saturate((sunDist - _SunGlareStrength) / (1 - _SunGlareStrength));
-
 
 
 				col += sunMie * p2 * _LightColor0.rgb; // Sun
@@ -170,14 +174,13 @@
 				col += unity_FogColor * p1; // Horizon fog
 
 				#if defined(ENABLE_STARS)
-				float3 rayDir = normalize(IN.texcoord - _WorldSpaceCameraPos);
+				float3 rayDir = normalize(IN.texcoord);
 				float star = 0.0;
-				for (float i = 1.0; i <= _Layers; i += 1.0)
+				// layer the stars
+				for (float i = 1; i <= _Layers; i++)
 				{
 					star += stars(rayDir, _Density * pow(_DensityMod, i), starModFromI(i)) * (1.0 / pow(_BrightnessMod, i));
 				}
-
-
 				col += _Color * star * _Brightness;
 
 				#endif
