@@ -17,18 +17,19 @@
 		_MoonSize("	Size", Range(0, 1)) = 0.03
 
 		[Header(Single star settings)]
-		_Color("	Stars color", Color) = (1.0, 1.0, 1.0, 1.0)
+		_Color("	Star color", Color) = (1.0, 1.0, 1.0, 1.0)
 		[MinMax(0.4, 3.0)] _StarSizeRange("	Star size range", Vector) = (0.6, 0.9, 0.0, 0.0)
 
 		[Header(Stars)]
-		[Toggle(ENABLE_STARS)] _EnableStars("Enable Stars", Int) = 1
+		//[Toggle(ENABLE_STARS)] _EnableStars("Enable Stars", Int) = 1
+		//_EnableStars("Enable Stars", Range(0, 1)) = 0
 		_Layers("	Star Layers", Range(1.0, 5.0)) = 5
 		_Density("	Star Density", Range(0.5, 4.0)) = 2.28
-		_DensityMod("	Star Density modulation", Range(1.1, 3.0)) = 1.95
+		_DensityMod("	Star Density mod", Range(1.1, 3.0)) = 1.95
 
 		[Header(Brightness settings)]
 		_Brightness("	Brightness", Range(0.0, 3.0)) = 2.89
-		_BrightnessMod("	Brightness modulation", Range(1.01, 4.0)) = 3.0
+		_BrightnessMod("	Brightness mod", Range(1.01, 4.0)) = 3.0
     }
     SubShader
     {
@@ -51,7 +52,7 @@
 			#define HARDNESS_EXPONENT_BASE 0.125
 			#define PI 3.141592653589793238462
 
-			#pragma shader_feature _ ENABLE_STARS
+			//#pragma shader_feature _ ENABLE_STARS
 
 			// data
             struct appdata
@@ -103,32 +104,35 @@
             }
 
 			// creating the stars
+			// param sphereRadius = star radius
+			// param rayDir  = camera position ray to point
 			float stars(float3 rayDir, float sphereRadius, float starSizeMod)
 			{
-				// create white dots
-				float3 spherePoint = rayDir * sphereRadius;
 				// create sphere
-				float upAtan = atan2(spherePoint.y, length(spherePoint.xz)) + 4.0 * PI;
+				float3 spherePoint = rayDir * sphereRadius;
+				float angleV = atan2(spherePoint.y, length(spherePoint.xz)) + (2.0 * PI);
 
 				// spread
 				float starSpaces = 1.0 / sphereRadius;
-				
+
 				// star size
-				float starSize = (sphereRadius * 0.0015) * fwidth(upAtan) * 1000.0 * starSizeMod;
-				// shift the star spaces
-				upAtan -= fmod(upAtan, starSpaces) - starSpaces * 0.5;
+				float starSize = (sphereRadius * 0.0015) * fwidth(angleV) * 1000.0 * starSizeMod;
+
+				// shift the star spaces vertically
+				angleV -= fmod(angleV, starSpaces) - starSpaces * 0.5;
 
 				// number of stars
-				float numberOfStars = floor(sqrt(pow(sphereRadius, 2.0) * (1.0 - pow(sin(upAtan), 2.0))) * 3.0);
+				float numberOfStars = floor(sqrt(pow(sphereRadius, 2.0) * (1.0 - pow(sin(angleV), 2.0))) * 3.0);
 
-				float planeAngle = atan2(spherePoint.z, spherePoint.x) + 4.0 * PI;
-				planeAngle = planeAngle - fmod(planeAngle, PI / numberOfStars);
+				
+				float angleH = atan2(spherePoint.z, spherePoint.x) + 2.0 * PI;
+				angleH -= fmod(angleH, PI / numberOfStars);
 
-				float2 randomPosition = random(float2(planeAngle, upAtan) + _Seed);
+				float2 randomPosition = random(float2(angleH, angleV) + _Seed);
 
-				float starLevel = sin(upAtan + starSpaces * (randomPosition.y - 0.5) * (1.0 - starSize)) * sphereRadius;
+				float starLevel = sin(angleV + starSpaces * (randomPosition.y - 0.5) * (1.0 - starSize)) * sphereRadius;
 				float starDistanceToYAxis = sqrt(sphereRadius * sphereRadius - starLevel * starLevel);
-				float starAngle = planeAngle + (PI * (randomPosition.x * (1.0 - starSize) + starSize * 0.5) / numberOfStars);
+				float starAngle = angleH + (PI * (randomPosition.x * (1.0 - starSize) + starSize * 0.5) / numberOfStars);
 				float3 starCenter = float3(cos(starAngle) * starDistanceToYAxis, starLevel, sin(starAngle) * starDistanceToYAxis);
 
 				float star = smoothstep(starSize, 0.0, distance(starCenter, spherePoint));
@@ -138,9 +142,9 @@
 
 			// lerp size of star based on layer
 			// further away means smaller star
-			float starModFromI(float i)
+			float layerStarMod(float layer)
 			{
-				return lerp(_StarSizeRange.y, _StarSizeRange.x, smoothstep(1.0, _Layers, i));
+				return lerp(_StarSizeRange.y, _StarSizeRange.x, smoothstep(1.0, _Layers, layer));
 			}
 
 
@@ -173,17 +177,17 @@
 				col += moonMie * p2 * _MoonColor.rgb; // Moon
 				col += unity_FogColor * p1; // Horizon fog
 
-				#if defined(ENABLE_STARS)
+				//#if defined(ENABLE_STARS)
 				float3 rayDir = normalize(IN.texcoord);
 				float star = 0.0;
 				// layer the stars
 				for (float i = 1; i <= _Layers; i++)
 				{
-					star += stars(rayDir, _Density * pow(_DensityMod, i), starModFromI(i)) * (1.0 / pow(_BrightnessMod, i));
+					star += stars(rayDir, _Density * pow(_DensityMod, i), layerStarMod(i)) * (1.0 / pow(_BrightnessMod, i));
 				}
 				col += _Color * star * _Brightness;
 
-				#endif
+				//#endif
 
                 return half4(col, 1);
             }
