@@ -28,6 +28,9 @@ public class TimeController : MonoBehaviour
     [Header("Stars")]
     [SerializeField] private AnimationCurve starFade;
 
+    [Header("Clouds")]
+    [SerializeField] private Gradient cloudColor;
+
     private void Update()
     {
 
@@ -64,5 +67,6 @@ public class TimeController : MonoBehaviour
         sun.color = sunColor.Evaluate(cycleStage);
 
         RenderSettings.skybox.SetFloat("_Brightness", starFade.Evaluate(cycleStage));
+        RenderSettings.skybox.SetColor("_CloudColor", cloudColor.Evaluate(cycleStage));
     }
 }

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3242541, g: 0.32434022, b: 0.3279519, a: 1}
+  m_IndirectSpecularColor: {r: 0.495607, g: 0.81370455, b: 1.2681147, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -151,7 +151,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   degreesPerSec: 20
-  time: 150
+  time: 40
   ambientColor:
     serializedVersion: 2
     key0: {r: 0.6132076, g: 0.5293254, b: 0.5293254, a: 1}
@@ -534,6 +534,35 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  cloudColor:
+    serializedVersion: 2
+    key0: {r: 0.61667854, g: 0.7584461, b: 0.7735849, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 0}
+    key3: {r: 0.44419718, g: 0.5710311, b: 0.5849056, a: 0}
+    key4: {r: 0.251157, g: 0.56910455, b: 0.6415094, a: 0}
+    key5: {r: 0.14533643, g: 0.37480074, b: 0.4339623, a: 0}
+    key6: {r: 0.7653525, g: 0.8584906, b: 0.8584906, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 7132
+    ctime2: 26407
+    ctime3: 35081
+    ctime4: 39772
+    ctime5: 62422
+    ctime6: 65535
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_NumColorKeys: 7
+    m_NumAlphaKeys: 2
 --- !u!4 &469558371
 Transform:
   m_ObjectHideFlags: 0

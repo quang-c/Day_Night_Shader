@@ -22,7 +22,6 @@
 
 		[Header(Stars)]
 		//[Toggle(ENABLE_STARS)] _EnableStars("Enable Stars", Int) = 1
-		//_EnableStars("Enable Stars", Range(0, 1)) = 0
 		_Layers("	Star Layers", Range(1.0, 5.0)) = 5
 		_Density("	Star Density", Range(0.5, 4.0)) = 2.28
 		_DensityMod("	Star Density mod", Range(1.1, 3.0)) = 1.95
@@ -30,6 +29,20 @@
 		[Header(Brightness settings)]
 		_Brightness("	Brightness", Range(0.0, 3.0)) = 2.89
 		_BrightnessMod("	Brightness mod", Range(1.01, 4.0)) = 3.0
+
+		[Header(Clouds)]
+		//[Toggle(ENABLE_BACKGROUND_NOISE)] _EnableBackgroundNoise("Enable Clouds", Int) = 1
+		_CloudColor("Cloud", Color) = (0.0, 0.33, 0.34, 1.0)
+		_NoiseDensity("Noise density", Range(1.0, 30.0)) = 8.6
+
+		//x - noise iterations			 y - softness						z - transparency
+		[NoiseParameters] _NoiseParams("Cloud Noise Pattern", Vector) = (0.75, 6.0, 0.795, 2.08)
+
+		//x - scale						y - noise iterations				z - transparency				w - size mod
+		[NoiseParameters] _NoiseMaskParams("Cloud Mask", Vector) = (0.33, 6.0, 0.628, 2.11)
+
+		//x,y - smoothstep													z - border						w - power
+		[NoiseCutParameters] _NoiseMaskParams2("Cloud Form", Vector) = (0.07, -0.001, 0.51, 2.5)
     }
     SubShader
     {
@@ -84,6 +97,14 @@
 			float _DensityMod;
 			float _BrightnessMod;
 			float _Brightness;
+
+			//#if defined(ENABLE_BACKGROUND_NOISE)
+			float4 _CloudColor;
+			float _NoiseDensity;
+			float4 _NoiseParams;
+			float4 _NoiseMaskParams;
+			float4 _NoiseMaskParams2;
+			//#endif
 
 			// calc sun or moon shape
 			half calculate(half3 sunDirPos, half3 ray, half size, out half distance)
@@ -177,7 +198,6 @@
 				col += moonMie * p2 * _MoonColor.rgb; // Moon
 				col += unity_FogColor * p1; // Horizon fog
 
-				//#if defined(ENABLE_STARS)
 				float3 rayDir = normalize(IN.texcoord);
 				float star = 0.0;
 				// layer the stars
@@ -185,10 +205,18 @@
 				{
 					star += stars(rayDir, _Density * pow(_DensityMod, i), layerStarMod(i)) * (1.0 / pow(_BrightnessMod, i));
 				}
-				col += _Color * star * _Brightness;
 
+				half3 skyColor = _SkyTint;
+
+				//#if defined(ENABLE_BACKGROUND_NOISE)
+				float3 posi = rayDir * _NoiseDensity + _Seed;
+				float noise = layeredNoise13(posi * _NoiseParams.x, _NoiseParams.y, _NoiseParams.z, _NoiseParams.w);
+				float noise2 = layeredNoise13(posi * _NoiseMaskParams.x * 0.05 + 21.32, _NoiseMaskParams.y, _NoiseMaskParams.z, _NoiseMaskParams.w);
+				noise2 = pow(smoothstep(_NoiseMaskParams2.x, _NoiseMaskParams2.y, abs(noise2 - _NoiseMaskParams2.z)), _NoiseMaskParams2.w);
+				skyColor += _CloudColor * noise2 * noise;
 				//#endif
 
+				col += _Color * star * _Brightness + skyColor;
                 return half4(col, 1);
             }
             ENDCG
