@@ -16,6 +16,7 @@
 		_MoonPosition("	Position", Vector) = (0, 0, 1)
 		_MoonSize("	Size", Range(0, 1)) = 0.03
 		_MoonTex("Moon Texture", 2D) = "black" {}
+		[Space][BloomParameters] _MoonBloomParams("Moon blooming parameters", Vector) = (10.0, -1.0, 0.3, 5.3)
 
 		[Header(Single star settings)]
 		_Color("	Star Color", Color) = (1.0, 1.0, 1.0, 1.0)
@@ -35,6 +36,7 @@
 		//[Toggle(ENABLE_BACKGROUND_NOISE)] _EnableBackgroundNoise("Enable Clouds", Int) = 1
 		_CloudColor("Cloud", Color) = (0.0, 0.33, 0.34, 1.0)
 		_NoiseDensity("Noise Density", Range(1.0, 30.0)) = 8.6
+		_Speed("Cloud Speed", Range(0.0, 1.0)) = 0.01
 
 		//x - noise iterations			 y - softness						z - transparency
 		[NoiseParameters] _NoiseParams("Cloud Noise Pattern", Vector) = (0.75, 6.0, 0.795, 2.08)
@@ -105,8 +107,10 @@
 			float4 _NoiseParams;
 			float4 _NoiseMaskParams;
 			float4 _NoiseMaskParams2;
+			float _Speed;
 			//#endif
 
+			float4 _MoonBloomParams;
 			sampler2D _MoonTex;
 
 			// calc sun or moon shape
@@ -185,9 +189,8 @@
 				half sunDist;
 				half moonDist;
 
-				//float4 moonCol = float4(0, 0, 0, 0);
 
-				// sunlight and moonlight scattering
+				// sunlight and moonlight source
 				half3 sunMie = calculate(_WorldSpaceLightPos0.xyz, IN.texcoord.xyz, _SunSize, sunDist);
 				half3 moonMie = calculate(_MoonPosition.xyz, IN.texcoord.xyz, _MoonSize, moonDist);
 
@@ -199,29 +202,32 @@
 				
 				half glareMultiplier = saturate((sunDist - _SunGlareStrength) / (1 - _SunGlareStrength));
 
-				float3 lightDir = normalize(_MoonPosition.xyz );
-				float3 rightLightDir = -normalize(cross(lightDir, float3(0.0, 1.0, 0.0)));
-				float3 upLightDir = -normalize(cross(rightLightDir, lightDir));
+				//pos
+				float3 moonPos =  _MoonPosition.xyz;
+				// z
+				float3 rightLightDir = normalize(cross(moonPos, float3(0.0, 1.0, 2.0)));
+				// cross vector
+				float3 upLightDir = cross(rightLightDir, moonPos);
 
-				float3x3 moonMatrix = float3x3(rightLightDir, upLightDir, lightDir);
+				float3x3 moonMatrix = float3x3(rightLightDir, upLightDir, moonPos);
 
 				float3 moonUV = (mul(moonMatrix, rayDir)) / _MoonSize + float3(0.5, 0.5, 0.0);
 
 				float4 moonCol = float4(0, 0, 0, 0);
-				//float moonBloom = pow(smoothstep(_MoonBloomParams.x, _MoonBloomParams.y, length(moonUV.xy - 0.5)), _MoonBloomParams.w) * _MoonBloomParams.z * (dot(rayDir, lightDir) * 0.5 + 0.5);
+				float moonBloom = pow(smoothstep(_MoonBloomParams.x, _MoonBloomParams.y, length(moonUV.xy - 0.5)), _MoonBloomParams.w) * _MoonBloomParams.z * (dot(rayDir, moonPos) * 0.5 + 0.5);
 
 				if (moonUV.x > 0.0 && moonUV.x < 1.0 && moonUV.y > 0.0 && moonUV.y < 1.0 && moonUV.z > 0.0)
 				{
-					moonCol = tex2D(_MoonTex, moonUV.xy);
+					moonCol = tex2D(_MoonTex, moonUV.xyz);
 				}
 
-				col = lerp(col, moonCol, moonCol.a) * _MoonColor;
 				//moonCol = tex2D(_MoonTex, IN.texcoord.xy);
-
-
 
 				col += sunMie * p2 * _LightColor0.rgb; // Sun
 				col += lerp(_SkyTint, unity_FogColor, glareMultiplier * glareMultiplier) * p2 * (1 - sunMie); // Sun glare
+
+				//col += lerp(col, moonCol, moonCol.a) * _MoonColor;
+				col += moonCol + moonBloom * _MoonColor;
 				//col += moonMie * p2 * _MoonColor; // Moon
 				col += unity_FogColor * p1; // Horizon fog
 
@@ -235,11 +241,14 @@
 				half3 skyColor = _SkyTint;
 
 				//#if defined(ENABLE_BACKGROUND_NOISE)
+				//uv coords
 				float3 posi = rayDir * _NoiseDensity + _Seed;
-				float noise = layeredNoise13(posi * _NoiseParams.x, _NoiseParams.y, _NoiseParams.z, _NoiseParams.w);
-				float noise2 = layeredNoise13(posi * _NoiseMaskParams.x * 0.05 + 21.32, _NoiseMaskParams.y, _NoiseMaskParams.z, _NoiseMaskParams.w);
-				noise2 = pow(smoothstep(_NoiseMaskParams2.x, _NoiseMaskParams2.y, abs(noise2 - _NoiseMaskParams2.z)), _NoiseMaskParams2.w);
-				skyColor += _CloudColor * noise2 * noise;
+
+				float noise = layeredNoise(posi * _NoiseParams.x , _NoiseParams.y, _NoiseParams.z, _NoiseParams.w); // base noise
+				float noise2 = layeredNoise(posi * _NoiseMaskParams.x * 0.05 + 21.32 + (_Time.y * _Speed), _NoiseMaskParams.y, _NoiseMaskParams.z , _NoiseMaskParams.w); // noise2
+				noise2 = pow(smoothstep(_NoiseMaskParams2.x , _NoiseMaskParams2.y , abs(noise2  - _NoiseMaskParams2.z )), _NoiseMaskParams2.w ); // noise 3 -> defining clouds
+				//+ (_Time.y * _Speed)
+				skyColor += _CloudColor * noise2 * noise ;
 				//#endif
 
 				col += _Color * star * _Brightness + skyColor;
