@@ -24,7 +24,6 @@ public class TimeController : MonoBehaviour
 
     [Header("Fog")]
     [SerializeField] private Gradient fogColor;
-    //[SerializeField] private AnimationCurve fogStartDistance;
 
     [Header("Stars")]
     [SerializeField] private AnimationCurve starFade;
@@ -43,6 +42,7 @@ public class TimeController : MonoBehaviour
         {
             time -= 360f;
         }
+
         // rotate the sun
         sun.transform.eulerAngles = new Vector3(time, -90f, 0f);
         // rotate the moon
@@ -54,7 +54,6 @@ public class TimeController : MonoBehaviour
         // set values for basic lighting settings
         RenderSettings.ambientLight = ambientColor.Evaluate(cycleStage);
         RenderSettings.fogColor = fogColor.Evaluate(cycleStage);
-        //RenderSettings.fogStartDistance = fogStartDistance.Evaluate(cycleStage);
 
         // set values in the skybox shader
         RenderSettings.skybox.SetFloat("_SunGlareStrength", sunGlareStrength.Evaluate(cycleStage));

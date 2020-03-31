@@ -73,7 +73,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AtmosphereThickness: 1.42
-    - _Brightness: 0.36525798
+    - _Brightness: 2
     - _BrightnessMod: 3.68
     - _BumpScale: 1
     - _Cutoff: 0.5
@@ -87,11 +87,11 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _HorizonFogExponent: 1.0078355
+    - _HorizonFogExponent: 1.0099286
     - _Layers: 3
     - _Metallic: 0
     - _Mode: 0
-    - _MoonSize: 0.13942131
+    - _MoonSize: 0.10019184
     - _NoiseDensity: 22
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -105,9 +105,9 @@ Material:
     - _StarsDensity: 0.305
     - _StarsSize: 0.0434
     - _SunDisk: 1
-    - _SunGlareStrength: 0.18569805
-    - _SunHardness: 7.172043
-    - _SunSize: 0.08231634
+    - _SunGlareStrength: 0.17291942
+    - _SunHardness: 0.34886694
+    - _SunSize: 0.10005859
     - _SunSizeConvergence: 5.59
     - _UVSec: 0
     - _ZWrite: 1
@@ -115,18 +115,18 @@ Material:
     - _stars2: 0.5
     - _stars_int: 1
     m_Colors:
-    - _CloudColor: {r: 0.7875892, g: 0.8371065, b: 0.781663, a: 1}
+    - _CloudColor: {r: 0.27884665, g: 0.4245791, b: 0.45962954, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.8018868, g: 0.8018868, b: 0.8018868, a: 1}
     - _MoonBloomParams: {r: 8, g: -1, b: 0.54, a: 9.99}
     - _MoonColor: {r: 0.7737629, g: 0.8660612, b: 0.8679245, a: 1}
-    - _MoonPosition: {r: -0.93292916, g: -0.36005983, b: -0.000000029802322, a: 0}
+    - _MoonPosition: {r: 0.121815264, g: 0.9925529, b: 0.000000059604645, a: 0}
     - _NoiseMaskParams: {r: 0.35, g: 5, b: 0.628, a: 2.11}
     - _NoiseMaskParams2: {r: 0.12, g: -0.01, b: 0.33, a: 2}
     - _NoiseParams: {r: 0.66, g: 20, b: 0.795, a: 1.2}
     - _SkyFogColor: {r: 0.48967603, g: 0.7924528, b: 0.782765, a: 1}
-    - _SkyTint: {r: 0.5816594, g: 0.63962144, b: 0.74806345, a: 1}
+    - _SkyTint: {r: 0.104712434, g: 0.104712434, b: 0.18342137, a: 1}
     - _StarColor: {r: 1, g: 1, b: 1, a: 1}
     - _StarSizeRange: {r: 0.9, g: 1.2, b: 0, a: 0}
     - _StarsHash: {r: 641, g: -113, b: 271, a: 1365}
