@@ -60,7 +60,7 @@ public class TimeController : MonoBehaviour
         RenderSettings.skybox.SetFloat("_SunSize", sunSize.Evaluate(cycleStage));
 
         RenderSettings.skybox.SetVector("_MoonPosition", new Vector4(-moon.transform.forward.x, -moon.transform.forward.y, -moon.transform.forward.z, 0));
-        //RenderSettings.skybox.SetFloat("_MoonSize", moonSize.Evaluate(cycleStage));
+        RenderSettings.skybox.SetFloat("_MoonSize", moonSize.Evaluate(cycleStage));
 
         RenderSettings.skybox.SetFloat("_HorizonFogExponent", horizonFog.Evaluate(cycleStage));
         RenderSettings.skybox.SetColor("_SkyTint", skyTint.Evaluate(cycleStage));

@@ -48,14 +48,14 @@ float noiseFunc(float3 x)
 }
 
 // layering the noise
-float layeredNoise(float3 x, float iterations, float alphaMod, float sizeMod)
+float layeredNoise(float3 x, float iterations, float amp, float freq)
 {
     float noise = 0.0;
     float maximum = 0.0;
     for (float i = 0.0; i <= iterations; i += 1.0)
     {
-        noise += noiseFunc(x * pow(sizeMod, i)) * pow(alphaMod, i);
-        maximum += pow(alphaMod, i);
+        noise += noiseFunc(x * pow(freq, i)) * pow(amp, i);
+        maximum += pow(amp, i);
     }
 
     return noise / maximum;
