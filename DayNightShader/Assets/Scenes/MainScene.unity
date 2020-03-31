@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.38025564, g: 0.69954485, b: 1.1555079, a: 1}
+  m_IndirectSpecularColor: {r: 0.45811597, g: 0.7424253, b: 1.1409074, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -389,17 +389,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.0008721936
-      value: 0.08042027
-      inSlope: -0.0009519371
-      outSlope: -0.0009519371
+      time: 0.003386079
+      value: 0.13935734
+      inSlope: 0.00045535347
+      outSlope: 0.00045535347
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.50134635
-      value: 0.07994385
+      time: 0.4483068
+      value: 0.13955994
       inSlope: -0.0060086986
       outSlope: -0.0060086986
       tangentMode: 0
@@ -407,8 +407,8 @@ MonoBehaviour:
       inWeight: 0.7107357
       outWeight: 0.18122043
     - serializedVersion: 3
-      time: 0.6010047
-      value: 0.060839847
+      time: 0.65160286
+      value: 0.099810794
       inSlope: -0.008718549
       outSlope: -0.008718549
       tangentMode: 0
@@ -416,8 +416,8 @@ MonoBehaviour:
       inWeight: 0.33333334
       outWeight: 0.161214
     - serializedVersion: 3
-      time: 0.9003483
-      value: 0.06131897
+      time: 0.8013262
+      value: 0.10083094
       inSlope: 0.0008697098
       outSlope: 0.0008697098
       tangentMode: 0
@@ -425,10 +425,10 @@ MonoBehaviour:
       inWeight: 0.3140589
       outWeight: 0.14683548
     - serializedVersion: 3
-      time: 0.99910796
-      value: 0.079934694
-      inSlope: 0.18849522
-      outSlope: 0.18849522
+      time: 1.0007559
+      value: 0.14010009
+      inSlope: 0.19690724
+      outSlope: 0.19690724
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334

@@ -220,7 +220,7 @@
 
 				col += moonCol;
 
-				col += sunMie * p2 * _LightColor0.rgb; // Sun
+				col += sunMie * p2 * _LightColor0.rgb * 10; // Sun
 				col += lerp(_SkyTint, unity_FogColor, glareMultiplier * glareMultiplier) * p2 * (1 - sunMie); // Sun glare
 
 				//col += lerp(col, moonCol, moonCol.a) * _MoonColor;
