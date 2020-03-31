@@ -8,18 +8,19 @@
 
 		[Header(Sun)]
 		_SunSize("	Size", Range(0,1)) = 0.04
-		_SunHardness("	Hardness", Float) = 0.1
+		_SunHardness("	Hardness", Range(0.0, 15.0)) = 15
 		_SunGlareStrength("	Glare Strength", Range(0, 1)) = 0.5
+		_SunBloomParams("	Sun Bloom Params", Vector) = (10.0, -1.0, 0.3, 5.3)
 
 		[Header(Moon)]
 		_MoonColor("	Color", Color) = (1, 1, 1, 1)
 		_MoonPosition("	Position", Vector) = (0, 0, 1)
-		_MoonSize("	Size", Range(0, 1)) = 0.03
-		_MoonTex("Moon Texture", 2D) = "black" {}
-		[Space][BloomParameters] _MoonBloomParams("Moon blooming parameters", Vector) = (10.0, -1.0, 0.3, 5.3)
+		_MoonSize("		Size", Range(0, 1)) = 0.03
+		[NoScaleOffset]_MoonTex("	Moon Texture", 2D) = "black" {}
+		_MoonBloomParams("	Moon Bloom Params", Vector) = (10.0, -1.0, 0.3, 5.3)
 
 		[Header(Single star settings)]
-		_Color("	Star Color", Color) = (1.0, 1.0, 1.0, 1.0)
+		_StarColor("	Star Color", Color) = (1.0, 1.0, 1.0, 1.0)
 		[MinMax(0.4, 3.0)] _StarSizeRange("	Star Size Range", Vector) = (0.6, 0.9, 0.0, 0.0)
 
 		[Header(Stars)]
@@ -88,30 +89,23 @@
 			//(such as a material color in a vertex shader) global variables are considered uniform by default
 			// half = medium precision floating point
 			// half3 = medium precision 3D vector with x,y,z components (also for color: r,g,b)
-			uniform float3 _MoonPosition;
-			uniform half3 _SkyTint, _MoonColor;
-			uniform half _SunSize, _HorizonFogExponent, _SunHardness, _SunGlareStrength, _MoonSize;
-
-			float _Seed;
-			float4 _Color;
-			float2 _StarSizeRange;
-			float _Density;
-			float _Layers;
-			float _DensityMod;
-			float _BrightnessMod;
-			float _Brightness;
-
-			//#if defined(ENABLE_BACKGROUND_NOISE)
-			float4 _CloudColor;
-			float _NoiseDensity;
-			float4 _NoiseParams;
-			float4 _NoiseMaskParams;
-			float4 _NoiseMaskParams2;
-			float _Speed;
-			//#endif
-
+			float3 _MoonPosition;
+			half3 _SkyTint, _MoonColor;
+			half _SunSize, _HorizonFogExponent, _SunHardness, _SunGlareStrength, _MoonSize;
+			float4 _SunBloomParams;
 			float4 _MoonBloomParams;
 			sampler2D _MoonTex;
+
+			float _Seed;
+			float4 _StarColor;
+			float2 _StarSizeRange;
+			float _Density, _Layers, _DensityMod, _BrightnessMod, _Brightness;
+
+			float4 _CloudColor;
+			float _NoiseDensity;
+			float4 _NoiseParams, _NoiseMaskParams, _NoiseMaskParams2;
+			float _Speed;
+
 
 			// calc sun or moon shape
 			half calculate(half3 sunDirPos, half3 ray, half size, out half distance)
@@ -189,11 +183,9 @@
 
 				half sunDist;
 				half moonDist;
-				//float moonBloom = pow(smoothstep(_MoonBloomParams.x, _MoonBloomParams.y, length(moonUV.xy - 0.5)), _MoonBloomParams.w) * _MoonBloomParams.z * (dot(rayDir, lightDir) * 0.5 + 0.5);
 
-				// sunlight and moonlight source
+				// the sun silhouette
 				half3 sunMie = calculate(_WorldSpaceLightPos0.xyz, IN.texcoord.xyz, _SunSize, sunDist);
-				half3 moonMie = calculate(_MoonPosition.xyz, IN.texcoord.xyz, _MoonSize, moonDist);
 
 				// sun blends with horizon fog when sunrise/sunset
 				float p1 = pow(min(1.0, 1.0 - p), _HorizonFogExponent);
@@ -203,6 +195,16 @@
 				
 				half glareMultiplier = saturate((sunDist - _SunGlareStrength) / (1 - _SunGlareStrength));
 
+				float3 sunLightDir = _WorldSpaceLightPos0.xyz;
+				float3 sunRightLightDir = normalize(cross(sunLightDir, float3(0.0, 1.0, 0.0)));
+				float3 sunUpLightDir = cross(sunRightLightDir, sunLightDir);
+
+				float3x3 sunMatrix = float3x3(sunRightLightDir, sunUpLightDir, sunLightDir);
+				float3 sunUV = (mul(sunMatrix, rayDir)) / _SunSize + float3(0.5, 0.5, 0.0);
+
+				float sunBloom = pow(smoothstep(_SunBloomParams.x, _SunBloomParams.y, length(sunUV.xy - 0.5)), _SunBloomParams.w) * _SunBloomParams.z * (dot(rayDir, _WorldSpaceLightPos0.xyz) * 0.5 + 0.5);
+
+				// moon stuff
 				float3 lightDir =  _MoonPosition.xyz;
 				float3 rightLightDir = normalize(cross(lightDir, float3(0.0, 1.0, 2.0)));
 				float3 upLightDir = cross(rightLightDir, lightDir);
@@ -210,7 +212,8 @@
 				float3x3 moonMatrix = float3x3(rightLightDir, upLightDir, lightDir);
 
 				float3 moonUV = (mul(moonMatrix, rayDir)) / _MoonSize + float3(0.5, 0.5, 0.0);
-				
+
+				float moonBloom = pow(smoothstep(_MoonBloomParams.x, _MoonBloomParams.y, length(moonUV.xy - 0.5)), _MoonBloomParams.w) * _MoonBloomParams.z * (dot(rayDir, lightDir) * 0.5 + 0.5);
 				
 
 				if (moonUV.x > 0.0 && moonUV.x < 1.0 && moonUV.y > 0.0 && moonUV.y < 1.0 && moonUV.z > 0.0)
@@ -218,15 +221,13 @@
 					moonCol = tex2D(_MoonTex, moonUV.xyz);
 				}
 
-				col += moonCol;
 
-				col += sunMie * p2 * _LightColor0.rgb * 10; // Sun
+				col += sunMie * p2 * _LightColor0.rgb * 10 + sunBloom; // Sun
+				col += moonCol + moonBloom; // Moon
 				col += lerp(_SkyTint, unity_FogColor, glareMultiplier * glareMultiplier) * p2 * (1 - sunMie); // Sun glare
-
-				//col += lerp(col, moonCol, moonCol.a) * _MoonColor;
-				//col += moonMie * p2 * _MoonColor; // Moon
 				col += unity_FogColor * p1; // Horizon fog
 
+				// star stuff
 				float star = 0.0;
 				// layer the stars
 				for (float i = 1; i <= _Layers; i++)
@@ -236,17 +237,15 @@
 
 				half3 skyColor = _SkyTint;
 
-				//#if defined(ENABLE_BACKGROUND_NOISE)
-				
+				// cloud stuff
 				float3 posi = rayDir * _NoiseDensity + _Seed; //uv coords
-
 				float noise = layeredNoise(posi * _NoiseParams.x , _NoiseParams.y, _NoiseParams.z, _NoiseParams.w); // base noise
 				float noise2 = layeredNoise(posi * _NoiseMaskParams.x * 0.05 + 21.32 + (_Time.y * _Speed), _NoiseMaskParams.y, _NoiseMaskParams.z , _NoiseMaskParams.w); // noise2
 				noise2 = pow(smoothstep(_NoiseMaskParams2.x , _NoiseMaskParams2.y , abs(noise2  - _NoiseMaskParams2.z )), _NoiseMaskParams2.w ); // finetune noise2
-				skyColor += _CloudColor * noise2 * noise ;
-				//#endif
+				skyColor += _CloudColor * noise2 * noise;
 
-				col += _Color * star * _Brightness + skyColor;
+				col += _StarColor * star * _Brightness + skyColor;
+
                 return half4(col, 1);
             }
             ENDCG

@@ -13,6 +13,7 @@ public class TimeController : MonoBehaviour
 
     [Header("Sun")]
     [SerializeField] private Light sun;
+    [SerializeField] private AnimationCurve sunHardness;
     [SerializeField] private Gradient sunColor;
     [SerializeField] private AnimationCurve sunSize;
     [SerializeField] private AnimationCurve sunGlareStrength;
@@ -57,6 +58,7 @@ public class TimeController : MonoBehaviour
 
         // set values in the skybox shader
         RenderSettings.skybox.SetFloat("_SunGlareStrength", sunGlareStrength.Evaluate(cycleStage));
+        RenderSettings.skybox.SetFloat("_SunHardness", sunHardness.Evaluate(cycleStage));
         RenderSettings.skybox.SetFloat("_SunSize", sunSize.Evaluate(cycleStage));
 
         RenderSettings.skybox.SetVector("_MoonPosition", new Vector4(-moon.transform.forward.x, -moon.transform.forward.y, -moon.transform.forward.z, 0));
