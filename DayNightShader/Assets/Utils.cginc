@@ -1,8 +1,11 @@
+
+// random for noise
 float rand(float3 x)
 {
     return frac(sin(dot(x, float3(33.5382, 51.3478, 42.432))) * 321.523);
 }
 
+// random for stars
 float2 random(float2 uv)
 {
     return frac(sin(mul(uv, float2x2(3.5382, 5.3478, 4.432, 4.321))) * 32.523);

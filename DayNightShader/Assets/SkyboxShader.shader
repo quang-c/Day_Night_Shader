@@ -203,7 +203,7 @@
 
 				// moon stuff
 				float3 lightDir =  _MoonPosition.xyz;
-				float3 rightLightDir = normalize(cross(lightDir, float3(2.0, 2.0, 2.0)));
+				float3 rightLightDir = normalize(cross(lightDir, float3(0.0, 1.0, 2.0)));
 				float3 upLightDir = cross(rightLightDir, lightDir);
 
 				float3x3 moonMatrix = float3x3(rightLightDir, upLightDir, lightDir);
