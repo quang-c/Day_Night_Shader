@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.38990617, g: 0.6987862, b: 1.1400869, a: 1}
+  m_IndirectSpecularColor: {r: 0.83190006, g: 0.65014356, b: 0.6637653, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -150,8 +150,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8dfb10483ef52db4587c8902c8ce331e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  degreesPerSec: 15
-  time: 220
+  degreesPerSec: 0
+  time: 2
   ambientColor:
     serializedVersion: 2
     key0: {r: 0.6132076, g: 0.5293254, b: 0.5293254, a: 1}
@@ -160,7 +160,7 @@ MonoBehaviour:
     key3: {r: 0.9150943, g: 0.6602075, b: 0.5395603, a: 0}
     key4: {r: 0.2823959, g: 0.30934775, b: 0.3584906, a: 0}
     key5: {r: 0.28627452, g: 0.30980393, b: 0.36078432, a: 0}
-    key6: {r: 0.5566038, g: 0.46996263, b: 0.46996263, a: 0}
+    key6: {r: 0.6117647, g: 0.5294118, b: 0.5294118, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
     ctime1: 10216
@@ -189,7 +189,7 @@ MonoBehaviour:
     key3: {r: 0.116545044, g: 0.116545044, b: 0.20784314, a: 0}
     key4: {r: 0.09531861, g: 0.09531861, b: 0.16981131, a: 0}
     key5: {r: 0.12156863, g: 0.12156863, b: 0.20784314, a: 0}
-    key6: {r: 0.5566038, g: 0.46996263, b: 0.46996263, a: 0}
+    key6: {r: 0.7058824, g: 0.5921569, b: 0.5921569, a: 0}
     key7: {r: 0.5566038, g: 0.46996263, b: 0.46996263, a: 0}
     ctime0: 0
     ctime1: 7132
@@ -261,7 +261,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  fo: 0
   sun: {fileID: 705507994}
   sunHardness:
     serializedVersion: 2
